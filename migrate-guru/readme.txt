@@ -1,12 +1,12 @@
-=== WordPress Migrate & Clone Free : Migrate Guru ===
+=== Migrate Guru – Site Migration & Cloning ===
 Contributors: migrateguru, backup-by-blogvault 
 Tags: migrate, migration, clone, copy, WordPress migrate
 Plugin URI: https://www.migrateguru.com/
 Donate link: https://www.migrateguru.com/
 Requires at least: 4.0
-Tested up to: 6.6
-Requires PHP: 5.6.0
-Stable tag: 5.65
+Tested up to: 7.1
+Requires PHP: 7.0
+Stable tag: 6.72
 License: GPLv2 or later
 License URI: [http://www.gnu.org/licenses/gpl-2.0.html](http://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -18,7 +18,7 @@ Migrate Guru is a powerful WordPress migration plugin designed to seamlessly tra
 
 == CHECKOUT Migrate Guru in Action ==
 
-[youtube https://www.youtube.com/watch?v=9TZ_x3NMI9Q]
+[youtube https://www.youtube.com/watch?v=ht1sBeqRTJY]
 
 == TOP FEATURES ==
 
@@ -128,6 +128,28 @@ Yes, we do. You can access it here: https://migrateguru.freshdesk.com/support/ho
 6. Click ‘Migrate’.
 
 == Changelog =
+= 6.72 =
+* Tweak: Added validation checks for input params.
+
+= 6.65 =
+* Improvement: Enhanced secret generation using the secure random_int function.
+* Improvement: Improved connection key generation mechanism.
+* Improvement: Optimized migration of large database tables.
+* Tweak: Improved file upload.
+* Tweak: Improved validation for streamed callbacks.
+
+= 6.28 =
+* Tweak: Improved migration workflow for smoother operation
+* Tweak: Updated UI for a simpler and more user-friendly experience
+
+= 5.92 =
+* Tweak: Improvements in fetching File Stats
+* Tweak: Code Restructuring
+
+= 5.88 =
+* Tweak: Code Restructuring
+* Tweak: Added support for PHP 8.4
+
 = 5.65 =
 * Tweak: 24 hrs Validity for Migration Key
 

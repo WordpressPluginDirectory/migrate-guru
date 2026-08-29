@@ -1,9 +1,9 @@
 <?php
 
 if (!defined('ABSPATH')) exit;
-if (!class_exists('BVBrandCallback')) :
+if (!class_exists('MGBrandCallback')) :
 
-class BVBrandCallback extends BVCallbackBase {
+class MGBrandCallback extends MGCallbackBase {
 	public $settings;
 
 	const BRAND_WING_VERSION = 1.1;

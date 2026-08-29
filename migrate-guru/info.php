@@ -10,7 +10,8 @@ if (!class_exists('MGInfo')) :
 		public $badgeinfo = 'bvmgbadge';
 		public $ip_header_option = 'bvmgipheader';
 		public $brand_option = 'bvmgbrand';
-		public $version = '5.65';
+		public $wp_lp_whitelabel_option = 'mgLpWhitelabelConf';
+		public $version = '6.72';
 		public $webpage = 'https://www.migrateguru.com';
 		public $appurl = 'https://mg.blogvault.net';
 		public $slug = 'migrate-guru/migrateguru.php';
@@ -21,7 +22,8 @@ if (!class_exists('MGInfo')) :
 		public $author = 'Migrate Guru';
 		public $title = 'Migrate Guru';
 
-		const DB_VERSION = '4';
+		const DB_VERSION = '5';
+		const AL_CONF_VERSION = '1.1';
 
 		public function __construct($settings) {
 			$this->settings = $settings;
@@ -62,14 +64,15 @@ if (!class_exists('MGInfo')) :
 			$bvsiteinfo = new MGWPSiteInfo();
 			$encoded_url = base64_encode($bvsiteinfo->siteurl());
 			$secret = MGRecover::defaultSecret($this->settings);
+			$tag = MGRecover::connectionTag($this->settings);
 
-			return base64_encode("v1:".$secret.":".$encoded_url);
-		}
+			#No tag means this site has no salt material in wp-config.php, and there
+			#is no connection key that would be safe to hand out.
+			if (empty($secret) || empty($tag)) {
+				return null;
+			}
 
-		public function getDefaultSecret() {
-			require_once dirname( __FILE__ ) . '/recover.php';
-			$bvsiteinfo = new MGWPSiteInfo();
-			return MGRecover::defaultSecret($this->settings);
+			return base64_encode("v3:".$secret.":".$encoded_url.":".$this->plugname.":".$tag);
 		}
 
 		public function getLatestElementorDBVersion($file) {
@@ -84,28 +87,14 @@ if (!class_exists('MGInfo')) :
 		}
 
 		public static function getRequestID() {
-			if (!defined("BV_REQUEST_ID")) {
-				define("BV_REQUEST_ID", uniqid(mt_rand()));
+			if (!defined("MG_REQUEST_ID")) {
+				define("MG_REQUEST_ID", uniqid(mt_rand())); // phpcs:ignore WordPress.WP.AlternativeFunctions.rand_mt_rand
 			}
-			return BV_REQUEST_ID;
-		}
-
-		public function canSetCWBranding() {
-			if (MGWPSiteInfo::isCWServer()) {
-
-				$bot_protect_accounts = MGAccount::accountsByType($this->settings, 'botprotect');
-				if (sizeof($bot_protect_accounts) >= 1)
-					return true;
-
-				$bot_protect_accounts = MGAccount::accountsByPattern($this->settings, 'email', '/@cw_user\.com$/');
-				if (sizeof($bot_protect_accounts) >= 1)
-					return true;
-			}
-
-			return false;
+			return MG_REQUEST_ID;
 		}
 
 		public function canWhiteLabel($slug = NULL) {
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended
 			if (array_key_exists("bv_override_global_whitelabel", $_REQUEST)) {
 				return false;
 			}
@@ -113,6 +102,7 @@ if (!class_exists('MGInfo')) :
 				$_REQUEST["bv_override_plugin_whitelabel"] === $slug) {
 				return false;
 			}
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 			return true;
 		}
 
@@ -136,6 +126,11 @@ if (!class_exists('MGInfo')) :
 			return is_array($whitelabel_infos) ? $whitelabel_infos : array();
 		}
 
+		public function getLPWhitelabelInfo() {
+			$infos = $this->settings->getOption($this->wp_lp_whitelabel_option);
+			return is_array($infos) ? $infos : array();
+		}
+
 		public function getPluginsWhitelabelInfoByTitle() {
 			$whitelabel_infos = $this->getPluginsWhitelabelInfos();
 			$whitelabel_infos_by_title = array();
@@ -153,7 +148,6 @@ if (!class_exists('MGInfo')) :
 			if (is_array($brand) && array_key_exists('menuname', $brand)) {
 				return $brand['menuname'];
 			}
-		  
 			return $this->brandname;
 		}
 
